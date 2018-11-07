@@ -1,40 +1,16 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import {observable} from 'mobx';
-import {observer} from 'mobx-react';
-import DevTools from 'mobx-react-devtools';
+import {action, configure, observable, runInAction} from 'mobx';
+import {AppState} from "./stores/AppState";
+import {TimerView} from "./components/TimerView";
+import createBrowserHistory from "history/createBrowserHistory";
+import {App} from "./App";
 
-class AppState {
-    @observable timer = 0;
-
-    constructor() {
-        setInterval(() => {
-            this.timer += 1;
-        }, 1000);
-    }
-
-    resetTimer() {
-        this.timer = 0;
-    }
-}
-
-@observer
-class TimerView extends React.Component<{appState: AppState}, {}> {
-    render() {
-        return (
-            <div>
-                <button onClick={this.onReset}>
-                    Seconds passed: {this.props.appState.timer}
-                </button>
-                <DevTools />
-            </div>
-        );
-     }
-
-     onReset = () => {
-         this.props.appState.resetTimer();
-     }
-};
+configure({enforceActions: "observed"});
 
 const appState = new AppState();
-ReactDOM.render(<TimerView appState={appState} />, document.getElementById('root'));
+
+const history = createBrowserHistory();
+
+ReactDOM.render(<App history={history} />, document.getElementById('root'));
+
